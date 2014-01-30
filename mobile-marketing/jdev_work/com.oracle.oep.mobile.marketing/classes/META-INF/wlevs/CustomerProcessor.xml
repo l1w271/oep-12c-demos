@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application"
+              xmlns:jdbc="http://www.oracle.com/ns/ocep/config/jdbc">
+    <processor>
+        <name>CustomerProcessor</name>
+        <rules>
+            
+            <!-- Send the offer only once per 1/2 hour for the same device and business  -->
+            <view id="CustomerPromotionView">
+            <![CDATA[
+             ISTREAM (
+                  SELECT *
+	              FROM PromotionEventChannel [PARTITION BY deviceID, businessID ROWS 1 RANGE 30 MINUTES]
+             ) DIFFERENCE USING (deviceID, businessID)
+
+            ]]>
+            </view>        
+            
+            <!--   
+            <query id="PromotionQuery">
+            <![CDATA[
+            ISTREAM(     
+        	SELECT deviceID, businessID, businessName, industryID, longitude, latitude, distance, 
+        	'Customer' as customerName
+        	FROM CustomerPromotionView [NOW]
+            )
+        	 ]]> 
+    		</query>
+           -->
+            
+            <!-- Join to the hadoop cluster to get the name of the customer   -->
+	  
+            <query id="CustomerPromotionQuery">
+            <![CDATA[
+            ISTREAM(         	
+        	SELECT p.deviceID as deviceID, p.businessID as businessID,  
+        	p.businessName as businessName, p.industryID as industryID, 
+        	p.longitude as longitude, p.latitude as latitude, p.distance as distance, 
+        	c.customerName as customerName, c.customerEmail as customerEmail
+        	FROM CustomerPromotionView [NOW] as p, CustomerInfo as c
+        	WHERE p.deviceID = c.deviceID
+        	)
+        	 ]]> 
+    		</query>
+    
+    		
+            
+        </rules>
+    </processor>
+</wlevs:config>

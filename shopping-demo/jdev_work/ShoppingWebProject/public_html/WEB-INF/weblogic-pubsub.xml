@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlps:weblogic-pubsub
+    xmlns:wlps="http://www.bea.com/ns/weblogic/weblogic-pubsub">
+
+<!-- server config -->
+  <wlps:server-config>
+    <wlps:publish-without-connect-allowed>true</wlps:publish-without-connect-allowed>
+    <wlps:supported-transport/>
+    <wlps:client-timeout-secs>100</wlps:client-timeout-secs>
+    <wlps:persistent-client-timeout-secs>400</wlps:persistent-client-timeout-secs>
+    <wlps:interval-millisecs>1000</wlps:interval-millisecs>
+    <wlps:multi-frame-interval-millisecs>2000</wlps:multi-frame-interval-millisecs>
+  </wlps:server-config>
+
+  <!--channel definition, no handler specified, default handler will be used-->
+  
+  <wlps:channel>
+    <wlps:channel-pattern>/shopping/**</wlps:channel-pattern>
+  </wlps:channel>
+
+  <wlps:channel-constraint>
+    <wlps:channel-resource-collection>
+      <wlps:channel-resource-name>all-permissions</wlps:channel-resource-name>
+      <wlps:description>Grant all permissions for everything by everyone</wlps:description>
+      <wlps:channel-pattern>/shopping/*</wlps:channel-pattern>
+    </wlps:channel-resource-collection>
+  </wlps:channel-constraint>
+
+ <!--allow only user with "publisher" role to publish messages to above channels-->
+<!-- 
+  <wlps:channel-constraint>
+    <wlps:channel-resource-collection>
+      <wlps:channel-resource-name>publish</wlps:channel-resource-name>
+      <wlps:description>publish channel constraint</wlps:description>
+      <wlps:channel-pattern>/stock/*</wlps:channel-pattern>
+      <wlps:channel-pattern>/management/publisher</wlps:channel-pattern>
+      <wlps:channel-operation>publish</wlps:channel-operation>
+      <wlps:channel-operation>create</wlps:channel-operation>
+    </wlps:channel-resource-collection>
+    <wlps:auth-constraint>
+     
+      <wlps:role-name>publisher</wlps:role-name>
+    </wlps:auth-constraint>
+  </wlps:channel-constraint>
+ -->
+
+<!--allow only user with "subscriber" role to subscrib to above channels-->
+<!-- 
+  <wlps:channel-constraint>
+    <wlps:channel-resource-collection>
+      <wlps:channel-resource-name>subscribe</wlps:channel-resource-name>
+      <wlps:description>subscribe channel constraint</wlps:description>
+      <wlps:channel-pattern>/stock/*</wlps:channel-pattern>
+      <wlps:channel-operation>subscribe</wlps:channel-operation>
+      <wlps:channel-operation>create</wlps:channel-operation>
+    </wlps:channel-resource-collection>
+    <wlps:auth-constraint>      
+      <wlps:role-name>subscriber</wlps:role-name>
+    </wlps:auth-constraint>
+  </wlps:channel-constraint>
+ -->  
+  
+</wlps:weblogic-pubsub>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application"
+              xmlns:jdbc="http://www.oracle.com/ns/ocep/config/jdbc">
+    <processor>
+        <name>LoginProcessor</name>
+        <rules>
+             <query id="LoginCacheQuery">
+             <![CDATA[
+        	ISTREAM(
+            	SELECT i.customerID as customerID, 
+            	       c.firstName as firstName,
+            		   c.lastName as lastName,
+            		   c.loyaltyStatus as loyaltyStatus, 
+            		   c.totalPurchases as totalPurchases
+            	FROM LoginChannel [NOW] as i, CustomerCache as c
+            	WHERE i.customerID = c.customerID
+        	)
+        	 ]]> 
+    		</query>
+         
+        </rules>
+    </processor>
+</wlevs:config>
+

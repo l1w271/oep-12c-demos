@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application">
+    <http-pub-sub-adapter>
+        <name>ShoppingSubAdapter</name>
+        <server-url>http://localhost:7001/ShoppingWeb/cometd</server-url>
+        <channel>/shopping/cart</channel>
+        <event-type>CartEvent</event-type>
+    </http-pub-sub-adapter>
+    <http-pub-sub-adapter>
+        <name>LoginSubAdapter</name>
+        <server-url>http://localhost:7001/ShoppingWeb/cometd</server-url>
+        <channel>/shopping/login</channel>
+        <event-type>LoginEvent</event-type>
+    </http-pub-sub-adapter>
+
+	<http-pub-sub-adapter>
+		<name>OfferAdapter</name>
+		<server-url>http://localhost:7001/ShoppingWeb/cometd</server-url>
+        <channel>/shopping/offer</channel>
+        <event-type>OfferEvent</event-type>
+	</http-pub-sub-adapter>
+    
+</wlevs:config>
+

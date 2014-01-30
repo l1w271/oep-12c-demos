@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application"
+              xmlns:jdbc="http://www.oracle.com/ns/ocep/config/jdbc">
+    <processor>
+        <name>OfferProcessor</name>
+        <rules>
+           
+    		<query id="Offer200Query">
+    		 <![CDATA[
+        	ISTREAM(
+            	SELECT customerID,
+            	       sessionID,
+            	       'Offer200' as offerID,
+            	       '200.jpg' as imgSource,
+            	       'p200' as productID,
+            	       'Skinny Cow Dreamy Clusters' as productName,
+            	       3.29 as price
+            	FROM CustomerChannel
+            	WHERE loyaltyStatus > 1
+        	)
+        	 ]]> 
+    		</query>
+    		
+    		<query id="Offer201Query">
+    		 <![CDATA[
+        	ISTREAM(
+            	SELECT customerID,
+            	       sessionID,
+            	       'Offer201' as offerID,
+            	       '201.jpg' as imgSource,
+            	       'p201' as productID,
+            	       'Life Savers Hard Candy' as productName,
+            	       1.99 as price
+            	FROM CustomerChannel as c
+            	WHERE loyaltyStatus < 2	 
+        	)
+        	 ]]>
+    		</query>
+    		
+    		
+        </rules>
+    </processor>
+</wlevs:config>
+

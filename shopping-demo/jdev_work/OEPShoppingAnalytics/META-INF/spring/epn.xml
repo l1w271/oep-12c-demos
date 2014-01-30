@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       
+xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
+       xmlns:jdbc="http://www.oracle.com/ns/ocep/jdbc"
+       xmlns:spatial="http://www.oracle.com/ns/ocep/spatial"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/osgi
+  http://www.springframework.org/schema/osgi/spring-osgi.xsd
+  http://www.bea.com/ns/wlevs/spring
+  http://www.bea.com/ns/wlevs/spring/spring-wlevs-v11_1_1_7.xsd
+  http://www.oracle.com/ns/ocep/jdbc
+  http://www.oracle.com/ns/ocep/jdbc/ocep-jdbc.xsd
+  http://www.oracle.com/ns/ocep/spatial
+  http://www.oracle.com/ns/ocep/spatial/ocep-spatial.xsd">
+
+	<wlevs:event-type-repository>
+		<wlevs:event-type type-name="CartEvent">
+			<wlevs:class>com.oracle.oep.shopping.event.CartEvent</wlevs:class>
+		</wlevs:event-type>
+		<wlevs:event-type type-name="TotalCartEvent">
+			<wlevs:class>com.oracle.oep.shopping.event.TotalCartEvent</wlevs:class>
+		</wlevs:event-type>
+	    <wlevs:event-type type-name="CustomerEvent">
+			<wlevs:class>com.oracle.oep.shopping.event.CustomerEvent</wlevs:class>
+		</wlevs:event-type>
+		<wlevs:event-type type-name="CustomerData">
+			<wlevs:class>com.oracle.cache.demo.CustomerData</wlevs:class>
+		</wlevs:event-type>
+		<wlevs:event-type type-name="LoginEvent">
+			<wlevs:class>com.oracle.oep.shopping.event.LoginEvent</wlevs:class>
+		</wlevs:event-type>
+		<wlevs:event-type type-name="OfferEvent">
+			<wlevs:class>com.oracle.oep.shopping.event.OfferEvent</wlevs:class>
+		</wlevs:event-type>
+	</wlevs:event-type-repository>
+
+	<!-- Caching Configuration -->
+	<wlevs:caching-system id="CoherenceCachingSystem" provider="coherence" advertise="true" lazy-init="true" />   
+
+ 	<wlevs:cache id="CustomerCache" caching-system="CoherenceCachingSystem" 
+		value-type="CustomerData" key-properties="customerID" advertise="true" name="CustomerCache">
+		<wlevs:cache-listener ref="CustomerCacheListener"/>			  
+	</wlevs:cache>  
+
+	<wlevs:event-bean id="CustomerCacheListener"
+		class="com.oracle.oep.listener.CacheListener">
+	</wlevs:event-bean>
+	
+	<wlevs:adapter id="LoginSubAdapter" provider="httpsub">
+		<wlevs:listener ref="LoginChannel" />
+	</wlevs:adapter>
+
+	<wlevs:adapter id="ShoppingSubAdapter" provider="httpsub">
+		<wlevs:listener ref="InputChannel" />
+	</wlevs:adapter>
+	<wlevs:channel id="InputChannel" event-type="CartEvent">
+		<wlevs:listener>
+			<bean id="InputBean" class="com.oracle.oep.listener.EventListener">
+				<property name="nodeName" value="InputChannel" />
+			</bean>
+		</wlevs:listener>
+		<wlevs:listener ref="AmountProcessor" />
+
+
+	</wlevs:channel>
+	<wlevs:processor id="AmountProcessor">
+		<wlevs:listener ref="OutputChannel" />
+	</wlevs:processor>
+	<wlevs:channel event-type="TotalCartEvent" id="OutputChannel">
+		<wlevs:listener>
+			<bean id="OutputBean" class="com.oracle.oep.listener.EventListener">
+				<property name="nodeName" value="OutputChannel" />
+			</bean>
+		</wlevs:listener>
+		<wlevs:listener ref="CustomerProcessor" />
+
+	</wlevs:channel>
+	<wlevs:processor id="CustomerProcessor">
+		<wlevs:listener ref="CustomerChannel" />
+		<wlevs:cache-source ref="CustomerCache" />
+	</wlevs:processor>
+	<wlevs:channel id="CustomerChannel" event-type="CustomerEvent">
+		<wlevs:listener>
+			<bean id="CustomerBean" class="com.oracle.oep.listener.EventListener">
+				<property name="nodeName" value="CustomerChannel" />
+			</bean>
+		</wlevs:listener>
+		<wlevs:listener ref="OfferProcessor" />
+
+	</wlevs:channel>
+	<wlevs:channel event-type="LoginEvent" id="LoginChannel">
+		<wlevs:listener>
+			<bean id="LoginBean" class="com.oracle.oep.listener.EventListener">
+				<property name="nodeName" value="LoginChannel" />
+			</bean>
+		</wlevs:listener>
+		<wlevs:listener ref="LoginProcessor" />
+	</wlevs:channel>
+	<wlevs:processor id="LoginProcessor">
+		<wlevs:listener ref="LoginOutputChannel" />
+		<wlevs:cache-source ref="CustomerCache" />
+	</wlevs:processor>
+	<wlevs:channel id="LoginOutputChannel" event-type="CustomerData">
+		<wlevs:listener>
+			<bean id="LoginOutputBean" class="com.oracle.oep.listener.EventListener">
+				<property name="nodeName" value="LoginOutputChannel" />
+			</bean>
+		</wlevs:listener>
+	
+	</wlevs:channel>
+	<wlevs:processor id="OfferProcessor">
+		<wlevs:listener ref="OfferChannel" />
+	</wlevs:processor>
+	<wlevs:channel id="OfferChannel" event-type="OfferEvent">
+		<wlevs:listener ref="DeduplicatonProcessor" />
+
+	</wlevs:channel>
+
+
+
+	<wlevs:processor id="DeduplicatonProcessor">
+		<wlevs:listener ref="SingleOfferChannel" />
+	</wlevs:processor>
+	<wlevs:channel id="SingleOfferChannel" event-type="OfferEvent">
+		<wlevs:listener>
+			<bean id="OfferBean" class="com.oracle.oep.listener.EventListener">
+				<property name="nodeName" value="OfferChannel" />
+			</bean>
+		</wlevs:listener>
+		<wlevs:listener ref="OfferAdapter" />
+	</wlevs:channel>
+	
+	<wlevs:adapter id="OfferAdapter" provider="httppub">
+	</wlevs:adapter>
+	
+</beans>
+

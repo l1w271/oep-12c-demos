@@ -1,0 +1,27 @@
+<?xml version='1.0'?>
+
+<coherence>
+	<cluster-config>
+		<member-identity>
+		  <cluster-name>ShoppingCluster</cluster-name>
+		</member-identity>
+		
+		<multicast-listener>
+			<address system-property="tangosol.coherence.clusteraddress">237.1.2.3</address>
+			<port system-property="tangosol.coherence.clusterport">23456</port>
+			<time-to-live system-property="tangosol.coherence.ttl">4</time-to-live>
+			<join-timeout-milliseconds>3000</join-timeout-milliseconds>
+		</multicast-listener>
+
+		<packet-publisher>
+			<packet-delivery>
+				<timeout-milliseconds>60000</timeout-milliseconds>
+			</packet-delivery>
+		</packet-publisher>
+	</cluster-config>
+
+	<management-config>
+		<allow-remote-management system-property="tangosol.coherence.management.remote">true</allow-remote-management>
+	</management-config>
+</coherence>
+

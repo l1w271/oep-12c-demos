@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
+       xmlns:jdbc="http://www.oracle.com/ns/ocep/jdbc"
+       xmlns:hadoop="http://www.oracle.com/ns/oep/hadoop"
+       xmlns:nosqldb="http://www.oracle.com/ns/oep/nosqldb"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/osgi
+  http://www.springframework.org/schema/osgi/spring-osgi.xsd
+  http://www.bea.com/ns/wlevs/spring
+  http://www.bea.com/ns/wlevs/spring/ocep-epn.xsd
+  http://www.oracle.com/ns/ocep/jdbc
+  http://www.oracle.com/ns/ocep/jdbc/ocep-jdbc.xsd
+  http://www.oracle.com/ns/oep/hadoop
+  http://www.oracle.com/ns/oep/hadoop/oep-hadoop.xsd
+  http://www.oracle.com/ns/oep/nosqldb
+  http://www.oracle.com/ns/oep/nosqldb/oep-nosqldb.xsd">
+
+	<wlevs:event-type-repository>
+		<wlevs:event-type type-name="DeviceEvent">
+			<wlevs:class>com.oracle.oep.event.DeviceEvent</wlevs:class>
+		</wlevs:event-type>
+		<wlevs:event-type type-name="MarketingEvent">
+			<wlevs:class>com.oracle.oep.event.MarketingEvent</wlevs:class>
+		</wlevs:event-type>
+		<wlevs:event-type type-name="ThanksEvent">
+			<wlevs:class>com.oracle.oep.event.ThanksEvent</wlevs:class>
+		</wlevs:event-type>
+		<wlevs:event-type type-name="BusinessData">
+			<wlevs:class>com.oracle.cache.demo.BusinessData</wlevs:class>
+		</wlevs:event-type>
+	   
+		<wlevs:event-type type-name="Customer">
+			<wlevs:properties>
+				<wlevs:property name="deviceID" type="char"/>
+				<wlevs:property name="customerName" type="char"/>
+				<wlevs:property name="customerEmail" type="char"/>
+			</wlevs:properties>
+		</wlevs:event-type>
+				
+		<wlevs:event-type type-name="BusinessLocation">
+			<wlevs:class>com.oracle.oep.event.BusinessLocation</wlevs:class>
+		</wlevs:event-type>
+		<wlevs:event-type type-name="PromotionEvent">
+		<wlevs:class>com.oracle.oep.event.PromotionEvent</wlevs:class></wlevs:event-type>
+	</wlevs:event-type-repository>
+
+	<!-- Caching Configuration -->
+	<wlevs:caching-system id="CoherenceCachingSystem" provider="coherence" />   
+
+ 	<wlevs:cache id="BusinessCache" caching-system="CoherenceCachingSystem" 
+		value-type="BusinessData" key-properties="businessID">
+		<wlevs:cache-loader ref="BusinessDataCacheLoader"/>
+		<wlevs:cache-listener ref="BusinessCacheListener"/>			  
+	</wlevs:cache>
+
+
+	<wlevs:event-bean id="BusinessCacheLoadAdapter"
+		class="com.oracle.oep.adapter.BusinessCacheLoadAdapter">	
+		<wlevs:instance-property name="businessCache" ref="BusinessCache"/>  
+		<wlevs:instance-property name="loader" ref="BusinessDataCacheLoader"/>
+		<wlevs:instance-property name="url"		 value="jdbc:oracle:thin:@localhost:1521:ORCL" />
+		<wlevs:instance-property name="username" value="hol" />
+		<wlevs:instance-property name="password" value="hol" />			
+	</wlevs:event-bean>
+
+	<wlevs:event-bean id="BusinessDataCacheLoader" class="com.oracle.cache.store.BusinessDataCacheLoader"/>
+
+
+	<wlevs:event-bean id="BusinessCacheListener"
+		class="com.oracle.oep.listener.BusinessCacheListener">
+		<wlevs:listener ref="BusinessLocationRelation" />
+	</wlevs:event-bean>
+
+
+	<wlevs:adapter id="PositionPubSubAdapter" provider="httpsub">
+		<wlevs:listener ref="DeviceLocationInputChannel" />
+	</wlevs:adapter>
+	
+	<wlevs:channel id="DeviceLocationInputChannel" event-type="DeviceEvent">
+		<wlevs:listener ref="DevicePositionProcessor" />
+	</wlevs:channel>
+
+	<wlevs:processor id="DevicePositionProcessor">
+		<wlevs:listener ref="DeviceLocationOutputChannel" />
+		<wlevs:listener ref="PromotionEventChannel" />
+		<wlevs:listener ref="ThanksEventChannel" />
+	</wlevs:processor>
+
+	<wlevs:channel id="DeviceLocationOutputChannel"
+		event-type="DeviceEvent">
+		<wlevs:listener>
+			<bean id="DeviceEventSink" class="com.oracle.oep.listener.EventListener">
+				<property name="nodeName" value="DeviceLocationOutputChannel" />
+			</bean>
+		</wlevs:listener>
+		<wlevs:listener ref="DeviceLocationPubAdapter" />
+	</wlevs:channel>
+	
+	<wlevs:adapter id="DeviceLocationPubAdapter" provider="httppub" />
+	<wlevs:adapter id="PromotionPubAdapter" provider="httppub" />
+
+
+	<wlevs:channel id="BusinessLocationRelation" event-type="BusinessLocation" is-relation="true">
+		<wlevs:listener ref="DevicePositionProcessor" />
+	</wlevs:channel>
+	
+	<wlevs:channel id="PromotionEventChannel" event-type="MarketingEvent">
+		<!-- 
+		<wlevs:listener>
+			<bean id="PromotionEventSink" class="com.oracle.oep.listener.EventListener">
+				<property name="nodeName" value="PromotionEventChannel" />
+			</bean>
+		</wlevs:listener>
+		 -->
+		<wlevs:listener ref="CustomerProcessor" />
+	</wlevs:channel>
+	
+	
+	<!-- The file element to integrate Customer.txt file from the Hadoop system into the EPN. -->
+
+    <hadoop:file id="CustomerInfo" event-type="Customer" path="/oracle/demos/marketing/Customer.txt" />
+    
+	<wlevs:processor id="CustomerProcessor">
+		<wlevs:listener ref="CustomerPromotionChannel" />
+		 
+		<wlevs:table-source ref="CustomerInfo"/>
+			 
+	</wlevs:processor>
+	
+	
+	
+	<wlevs:channel id="CustomerPromotionChannel" event-type="PromotionEvent">
+		<wlevs:listener>
+			<bean id="CustomerPromotionEventSink" class="com.oracle.oep.listener.EventListener">
+				<property name="nodeName" value="CustomerPromotionChannel" />
+			</bean>
+		</wlevs:listener>
+		<wlevs:listener ref="PromotionPubAdapter" />
+	</wlevs:channel>
+	
+	
+	
+	
+	<!-- 
+	<wlevs:channel event-type="ThanksEvent" id="ThanksEventChannel">
+		<wlevs:listener ref="ThanksPubAdapter" />
+	</wlevs:channel>
+	<wlevs:adapter id="ThanksPubAdapter" provider="httppub">
+	</wlevs:adapter>
+	 -->
+
+	<!-- 
+	<bean id="InboundJmsMessageConverter" class="com.oracle.oep.adapter.InboundJmsMessageConverter"/>
+	
+	
+	<wlevs:adapter id="MobilePositionsJMSAdapter" provider="jms-inbound">
+		<wlevs:listener ref="DeviceLocationInputChannel" />
+		<wlevs:instance-property name="converterBean" ref="InboundJmsMessageConverter" />
+	</wlevs:adapter>
+ -->
+
+	<wlevs:channel event-type="ThanksEvent" id="ThanksEventChannel">
+		<wlevs:listener ref="ThanksPubAdapter" />
+	</wlevs:channel>
+	<wlevs:adapter id="ThanksPubAdapter" provider="httppub">
+	</wlevs:adapter>
+	
+	<bean id="InboundJmsMessageConverter" class="com.oracle.oep.adapter.InboundJmsMessageConverter" />
+	
+	<wlevs:adapter id="MobilePositionsJMSAdapter" provider="jms-inbound">
+		<wlevs:listener ref="DeviceLocationInputChannel" />
+		<wlevs:instance-property name="converterBean" ref="InboundJmsMessageConverter" />
+	</wlevs:adapter>
+
+
+
+</beans>

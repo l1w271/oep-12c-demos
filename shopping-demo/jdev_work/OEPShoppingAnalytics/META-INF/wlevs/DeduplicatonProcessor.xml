@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application"
+              xmlns:jdbc="http://www.oracle.com/ns/ocep/config/jdbc">
+    <processor>
+        <name>DeduplicatonProcessor</name>
+        <rules>
+            <query id="OfferOnceQuery">
+            <![CDATA[
+             ISTREAM (
+                  SELECT *
+	              FROM OfferChannel [PARTITION BY customerID, sessionID, offerID ROWS 1 RANGE 30 MINUTES]
+             ) DIFFERENCE USING (customerID, sessionID, offerID)
+
+            ]]>       
+           </query>   
+        </rules>
+    </processor>
+</wlevs:config>
+

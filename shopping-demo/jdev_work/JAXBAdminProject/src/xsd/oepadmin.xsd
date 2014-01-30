@@ -1,0 +1,64 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://xmlns.oracle.com/ns/oep"
+        xmlns:oep="http://xmlns.oracle.com/ns/oep"
+        elementFormDefault="qualified">
+
+	<element name="JMXAdminRequest" type="oep:JMXAdminRequest"/>
+	<element name="SMSQuery" type="oep:SMSQuery"/>
+<!--                  
+  <element name="Connection" type="cep:CEPConnection"/>
+  <element name="Query" type="cep:CEPQuery"/>
+ -->
+  <complexType name="CEPConnection">
+    <sequence>
+      <element name="username" type="string"/>
+      <element name="password" type="string"/>
+      <element name="hostname" type="string"/>
+      <element name="port" type="int"/>
+	</sequence>
+  </complexType>
+
+
+  <complexType name="CEPQuery">
+    <sequence>
+      <element name="application" type="string"/>
+      <element name="processor" type="string"/>
+      <element name="queryName" type="string"/>
+      <element name="queryString" type="string"/>            
+	</sequence>
+  </complexType>
+  
+  <complexType name="JMXAdminRequest">  
+      <sequence>
+      	<element name="RequestType" type="string" />
+      	<element name="Connection" type="oep:CEPConnection"/>
+      	<element name="Query" type="oep:CEPQuery"/>
+      </sequence>
+  </complexType>
+ 
+  <complexType name="IndustryQuery">  
+      <sequence>
+      	<element name="industryID" type="string" />
+      	<element name="totalAmount" type="decimal" />      	
+      </sequence>
+  </complexType>
+
+ 
+  <complexType name="SMSQuery">  
+      <sequence>
+      	<element name="requestID" type="string" />
+      	<element name="request" type="string" />
+      	<element name="subscriberType" type="string" />
+      	<element name="paymentType" type="string" />      	
+      	<element name="tariff" type="string" />
+      	<element name="subsegment" type="string" />
+      	<element name="weeklySMS" type="string" />
+      	<element name="monthlySMS" type="string" />
+      	<element name="refillAmount" type="string" />      	
+      </sequence>
+  </complexType>
+ 
+ 
+  
+</schema>
+

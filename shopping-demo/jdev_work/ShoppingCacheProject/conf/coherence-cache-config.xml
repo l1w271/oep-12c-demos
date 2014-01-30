@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<!DOCTYPE cache-config SYSTEM "cache-config.dtd">
+
+<cache-config>
+	<caching-scheme-mapping>
+
+		<cache-mapping>
+			<cache-name>CustomerCache</cache-name>
+			<scheme-name>distributed-read</scheme-name>
+			<init-params>
+		        <init-param>
+		          <param-name>demo-load-class</param-name>
+		          <param-value>com.oracle.cache.store.CustomerDataCacheLoader</param-value>
+		        </init-param>
+		        <init-param>
+		          <param-name>demo-jdbc-url</param-name>
+		          <param-value system-property="com.oracle.oep.cache.store.jdbc.url">
+		           jdbc:oracle:thin:@localhost:1521:demo
+		          </param-value>
+		        </init-param>
+		        <init-param>
+		          <param-name>demo-jdbc-username</param-name>
+		          <param-value system-property="com.oracle.oep.cache.store.jdbc.username">
+		           shopping
+		          </param-value>
+		        </init-param>
+		        <init-param>
+		          <param-name>demo-jdbc-password</param-name>
+		          <param-value system-property="com.oracle.oep.cache.store.jdbc.password">
+		           shopping
+		          </param-value>
+		        </init-param>
+			</init-params>		
+		</cache-mapping>		
+					
+	</caching-scheme-mapping>		
+
+	<caching-schemes>
+	
+	<local-scheme>
+      <scheme-name>local-binary</scheme-name>
+      <high-units>{back-size-limit 0}</high-units>
+      <unit-calculator>BINARY</unit-calculator>
+    </local-scheme>
+
+    <distributed-scheme>
+      <scheme-name>distributed-read</scheme-name>
+      <service-name>DistributedCache-ReadThrough</service-name>
+ 	     <serializer>
+			<class-name>com.tangosol.io.pof.ConfigurablePofContext</class-name>
+			<init-params>
+				<init-param>
+					<param-type>string</param-type>
+					<param-value>shopping-pof-config.xml</param-value>
+				</init-param>
+			</init-params>
+		</serializer>
+      <!--  
+      <thread-count system-property="com.turkcell.coherence.read.threads">8</thread-count>
+		-->
+		
+      <backing-map-scheme>
+        <read-write-backing-map-scheme>
+         <internal-cache-scheme>
+            <local-scheme>
+              <scheme-ref>local-binary</scheme-ref>
+            </local-scheme>
+          </internal-cache-scheme>
+          
+          <cachestore-scheme>
+            <class-scheme>
+              <class-name>{demo-load-class}</class-name>
+              <init-params>
+                <init-param>
+                  <param-type>string</param-type>
+                  <param-value>{demo-jdbc-url}</param-value>
+                </init-param>
+                <init-param>
+                  <param-type>string</param-type>
+                  <param-value>{demo-jdbc-username}</param-value>
+                </init-param>
+                <init-param>
+                  <param-type>string</param-type>
+                  <param-value>{demo-jdbc-password}</param-value>
+                </init-param>
+              </init-params>
+            </class-scheme>
+
+            <operation-bundling>
+              <bundle-config>
+                <operation-name>load</operation-name>
+                <preferred-size>50</preferred-size>
+                <delay-millis>2</delay-millis>
+                <thread-threshold>2</thread-threshold>
+              </bundle-config>
+            </operation-bundling>          
+          </cachestore-scheme>
+          
+          <read-only>true</read-only>
+        </read-write-backing-map-scheme>
+      </backing-map-scheme>
+
+      <autostart>true</autostart>
+    </distributed-scheme>
+		
+	</caching-schemes>
+
+</cache-config>

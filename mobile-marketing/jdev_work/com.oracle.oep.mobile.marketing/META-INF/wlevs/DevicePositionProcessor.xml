@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application"
+              xmlns:jdbc="http://www.oracle.com/ns/ocep/config/jdbc">
+    <processor>
+        <name>DevicePositionProcessor</name>
+        <rules>
+
+            <query id="DevicePositionQuery"> 
+            <![CDATA[        
+            SELECT deviceID, longitude, latitude
+            FROM DeviceLocationInputChannel 
+            ]]> 
+            </query>
+
+            <view id="DevicePositionView"> 
+            <![CDATA[        
+            ISTREAM(
+            SELECT deviceID, longitude, latitude, com.oracle.cep.cartridge.spatial.Geometry.createPoint@spatial(longitude, latitude) as geom
+            FROM DeviceLocationInputChannel 
+            )
+            ]]> 
+            </view>
+            
+            <view id="NearestBusinessView">
+            <![CDATA[
+            ISTREAM(         	
+        	SELECT b.businessID as businessID, b.businessName as businessName, b.industryID as industryID, 
+        	d.deviceID as deviceID, d.longitude as longitude, d.latitude as latitude,
+        	com.oracle.cep.cartridge.spatial.Geometry.distance@spatial(b.geom, d.geom) as distance
+        	FROM DevicePositionView [NOW] as d, BusinessLocationRelation as b
+        	WHERE (NN@spatial(b.geom, d.geom, 50.0d) = true)
+        	)
+        	 ]]> 
+    		</view>
+    		
+    		<!-- DISTANCE IN METERS   100m = approx. 328ft -->
+        
+       		<query id="DistanceQuery"> 
+            <![CDATA[      
+            SELECT *
+            FROM NearestBusinessView
+            WHERE distance < 500.0
+            ]]> 
+            </query>
+           
+ 
+            <query id="InBusinessQuery"> 
+            <![CDATA[        
+            SELECT *
+            FROM NearestBusinessView
+            WHERE distance < 1
+            ]]> 
+            </query>
+            
+        
+        </rules>
+    </processor>
+
+	<channel>
+		<name>DeviceLocationOutputChannel</name>
+		<selector>DevicePositionQuery</selector>
+	</channel>
+	
+	
+	<channel>
+		<name>PromotionEventChannel</name>
+		<selector>DistanceQuery</selector>
+	</channel>
+
+
+	<channel>
+		<name>ThanksEventChannel</name>
+		<selector>InBusinessQuery</selector>
+	</channel>
+ 
+
+
+</wlevs:config>
+
+
+
+ 
