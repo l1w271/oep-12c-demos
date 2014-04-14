@@ -2,8 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:osgi="http://www.springframework.org/schema/osgi"
-       
-xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
+       xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
        xmlns:jdbc="http://www.oracle.com/ns/ocep/jdbc"
        xmlns:spatial="http://www.oracle.com/ns/ocep/spatial"
        xsi:schemaLocation="
@@ -60,7 +59,7 @@ xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
 	</wlevs:adapter>
 	<wlevs:channel id="InputChannel" event-type="CartEvent">
 		<wlevs:listener>
-			<bean id="InputBean" class="com.oracle.oep.listener.EventListener">
+			<bean id="InputBean" class="EventListener">
 				<property name="nodeName" value="InputChannel" />
 			</bean>
 		</wlevs:listener>
@@ -73,7 +72,7 @@ xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
 	</wlevs:processor>
 	<wlevs:channel event-type="TotalCartEvent" id="OutputChannel">
 		<wlevs:listener>
-			<bean id="OutputBean" class="com.oracle.oep.listener.EventListener">
+			<bean id="OutputBean" class="EventListener">
 				<property name="nodeName" value="OutputChannel" />
 			</bean>
 		</wlevs:listener>
@@ -86,7 +85,7 @@ xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
 	</wlevs:processor>
 	<wlevs:channel id="CustomerChannel" event-type="CustomerEvent">
 		<wlevs:listener>
-			<bean id="CustomerBean" class="com.oracle.oep.listener.EventListener">
+			<bean id="CustomerBean" class="EventListener">
 				<property name="nodeName" value="CustomerChannel" />
 			</bean>
 		</wlevs:listener>
@@ -94,8 +93,8 @@ xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
 
 	</wlevs:channel>
 	<wlevs:channel event-type="LoginEvent" id="LoginChannel">
-		<wlevs:listener>
-			<bean id="LoginBean" class="com.oracle.oep.listener.EventListener">
+                <wlevs:listener>
+ 			<bean id="LoginBean" class="EventListener">
 				<property name="nodeName" value="LoginChannel" />
 			</bean>
 		</wlevs:listener>
@@ -105,20 +104,23 @@ xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
 		<wlevs:listener ref="LoginOutputChannel" />
 		<wlevs:cache-source ref="CustomerCache" />
 	</wlevs:processor>
-	<wlevs:channel id="LoginOutputChannel" event-type="CustomerData">
-		<wlevs:listener>
-			<bean id="LoginOutputBean" class="com.oracle.oep.listener.EventListener">
+	
+        <wlevs:channel id="LoginOutputChannel" event-type="CustomerData">       
+                <wlevs:listener ref="LoginPubAdapter"/>
+                <wlevs:listener>
+			<bean id="LoginOutputBean" class="EventListener">
 				<property name="nodeName" value="LoginOutputChannel" />
 			</bean>
 		</wlevs:listener>
 	
 	</wlevs:channel>
+        
 	<wlevs:processor id="OfferProcessor">
 		<wlevs:listener ref="OfferChannel" />
 	</wlevs:processor>
+        
 	<wlevs:channel id="OfferChannel" event-type="OfferEvent">
 		<wlevs:listener ref="DeduplicatonProcessor" />
-
 	</wlevs:channel>
 
 
@@ -126,9 +128,10 @@ xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
 	<wlevs:processor id="DeduplicatonProcessor">
 		<wlevs:listener ref="SingleOfferChannel" />
 	</wlevs:processor>
+        
 	<wlevs:channel id="SingleOfferChannel" event-type="OfferEvent">
 		<wlevs:listener>
-			<bean id="OfferBean" class="com.oracle.oep.listener.EventListener">
+			<bean id="OfferBean" class="EventListener">
 				<property name="nodeName" value="OfferChannel" />
 			</bean>
 		</wlevs:listener>
@@ -137,6 +140,8 @@ xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
 	
 	<wlevs:adapter id="OfferAdapter" provider="httppub">
 	</wlevs:adapter>
-	
+        
+ <wlevs:adapter id="LoginPubAdapter" provider="httppub"/>
+
 </beans>
 

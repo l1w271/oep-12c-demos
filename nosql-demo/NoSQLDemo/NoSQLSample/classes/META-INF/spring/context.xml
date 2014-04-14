@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
+       xmlns:nosqldb="http://www.oracle.com/ns/oep/nosqldb"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/osgi
+  http://www.springframework.org/schema/osgi/spring-osgi.xsd
+  http://www.oracle.com/ns/oep/nosqldb
+  http://www.oracle.com/ns/oep/nosqldb/oep-nosqldb.xsd  
+  http://www.bea.com/ns/wlevs/spring
+  http://www.bea.com/ns/wlevs/spring/ocep-epn.xsd">
+
+       <wlevs:event-type-repository>
+        <wlevs:event-type type-name="SalesEvent">
+          <wlevs:class>com.oracle.oep.event.SalesEvent</wlevs:class>
+        </wlevs:event-type>
+        <wlevs:event-type type-name="CustomerDescription">
+          <wlevs:class>com.oracle.oep.sample.CustomerDescription</wlevs:class>
+        </wlevs:event-type>
+        <wlevs:event-type type-name="LargeSalesEvent">
+          <wlevs:class>com.oracle.oep.event.LargeSalesEvent</wlevs:class>
+        </wlevs:event-type>
+    </wlevs:event-type-repository>
+
+    <!-- Assemble EPN (event processing network) -->
+    <wlevs:adapter id="A1" class="com.oracle.oep.adapter.SalesAdapter" >
+        <wlevs:listener ref="S1"/>
+    </wlevs:adapter>
+
+	<wlevs:channel id="S1" event-type="SalesEvent">
+                <wlevs:listener ref="OutputBean"/>
+		<wlevs:listener ref="P1" />
+	</wlevs:channel>
+                  
+    <nosqldb:store id="CustomerInfo" store-name="kvstore" event-type="CustomerDescription"  store-locations="localhost:5000" />
+                   
+    <wlevs:processor id="P1">
+        <wlevs:table-source ref="CustomerInfo" />
+    </wlevs:processor>
+    
+    <wlevs:channel id="S2" advertise="true" event-type="LargeSalesEvent" >
+        <wlevs:listener ref="OutputBean"/>
+        <wlevs:source ref="P1"/>
+    </wlevs:channel>
+
+    <!-- Create business object -->
+    <bean id="OutputBean" class="com.oracle.oep.listener.OutputBean" />
+
+</beans>

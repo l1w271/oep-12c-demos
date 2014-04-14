@@ -22,6 +22,8 @@
       <string v="oracle.jdeveloper.model.PathsConfiguration/ResourceBundlesContentSet"/>
    </list>
    <list n="listOfChildren">
+      <hash><url n="URL" path="com.oracle.cache.mobile.marketing/com.oracle.cache.mobile.marketing.jpr"/></hash>
       <hash><url n="URL" path="com.oracle.oep.mobile.marketing/com.oracle.oep.mobile.marketing.jpr"/></hash>
+      <hash><url n="URL" path="com.oracle.oep.mobile.marketing.data/com.oracle.oep.mobile.marketing.data.jpr"/></hash>
    </list>
 </jws:workspace>

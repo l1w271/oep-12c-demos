@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application">
+
+    <processor>
+        <name>P1</name>
+        <rules>
+            <query id="q1">
+            <![CDATA[
+            ISTREAM(
+                SELECT address, customerName, creditScore, price, item	
+                FROM S1 [NOW], CustomerInfo as cust
+                WHERE S1.userId = cust.userId 
+                AND S1.price > 2000.00
+                )
+            ]]></query>   
+        </rules>
+    </processor>
+
+</wlevs:config>

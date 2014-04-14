@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application">
+    <processor>
+        <name>MilestoneAlert24x7</name>
+        <rules>
+            <view id="Filter24x7Hours"><![CDATA[
+				ISTREAM(
+				select * from CleanDispatchEvents [now] where serviceHours like "^24x7"
+				)
+				]]></view>
+            <query id="MisingFollowOnDispatch"><![CDATA[
+			IStream (
+				select
+					"Missing Follow Up 24x7" as alertType,
+	            	M.dispatchID,
+	            	M.serviceHours,
+	            	M.serviceLevel,
+	            	M.serviceTAG,
+	            	M.statusCode
+            	from
+            		Filter24x7Hours
+            	Match_Recognize (
+            		Partition By dispatchId
+            		Measures
+	            		Que.dispatchId as dispatchID,
+	            		Que.serviceHours as serviceHours,
+	            		Que.serviceLevel as serviceLevel,
+	            		Que.serviceTag as serviceTAG,
+	            		Que.statusCode as statusCode
+	            	Include Timer Events
+            		Pattern
+            			(Que NonQue*) duration 10 seconds
+            		Define
+            			Que as Que.statusCode = "QUE",
+            			NonQue as NonQue.statusCode = "QUE"
+            	) as M)
+				]]></query>
+            <!--
+      <view id="Filter24x7Hours"><![CDATA[
+        SELECT A.*
+        FROM CleanDispatchEvents 
+          MATCH_RECOGNIZE (
+            PARTITION BY dispatchId
+            MEASURES
+	      A.dispatchId as dispatchID,
+	      A.serviceHours as serviceHours,
+	      A.serviceLevel as serviceLevel,
+	      A.serviceTag as serviceTAG,
+	      A.statusCode as statusCode
+            INCLUDE TIMER EVENTS
+            PATTERN ( A B* )
+            DURATION int(A.serviceLevel) SECONDS
+            DEFINE
+              A AS (A.status = "QUE"),
+              B AS NOT(B.status = "QUE")
+          ) AS T]]></view>
+      <query id="MisingFollowOnDispatch"><![CDATA[ISTREAM (
+          SELECT "Missing Follow Up 24x7" as alertType, * 
+          FROM Filter24x7Hours [RANGE 10 SECONDS SLIDE 10 SECONDS]
+          ORDER BY ELEMENT_TIME ASC ROWS 1
+        )]]></query>
+        -->
+        </rules>
+    </processor>
+    <processor>
+        <name>MilestoneAlert2BusinessDays</name>
+        <rules>
+            <view id="Filter2BusinessDays"><![CDATA[
+				ISTREAM(
+				select * from CleanDispatchEvents [now] where serviceLevel like "^2 Business Days"
+				)
+				]]></view>
+            <query id="MisingFollowOnDispatchVariable"><![CDATA[
+			IStream (
+				select
+					"Missing Follow Up 2 Business Days" as alertType,
+	            	M.dispatchID,
+	            	M.serviceHours,
+	            	M.serviceLevel,
+	            	M.serviceTAG,
+	            	M.statusCode
+            	from
+            		Filter2BusinessDays
+            	Match_Recognize (
+            		Partition By dispatchId
+            		Measures
+	            		Que.dispatchId as dispatchID,
+	            		Que.serviceHours as serviceHours,
+	            		Que.serviceLevel as serviceLevel,
+	            		(ActualDays(Que.serviceHours)*24) as serviceTAG,
+	            		Que.statusCode as statusCode
+	            	Include Timer Events
+            		Pattern
+            			(Que NonQue*) duration 10 seconds
+            		Define
+            			Que as Que.statusCode = "QUE",
+            			NonQue as NonQue.statusCode = "QUE"
+            	) as M)
+				]]></query>
+        </rules>
+    </processor>
+    <csv-adapter>
+        <name>DispatchEventCSVAdapter</name>
+        <event-interval units="seconds">1</event-interval>
+    </csv-adapter>
+</wlevs:config>

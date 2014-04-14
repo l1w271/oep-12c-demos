@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application">
+  <processor>
+    <name>DispatchEventProcessor</name>
+    <rules>
+    
+      <view id="InputView"><![CDATA[ 
+        SELECT dispatchId, serviceHours, statusCode, 
+               serviceLevel, serviceTag,
+               RandomLowInterval(dispatchId) as slaEnd 
+        FROM InputChannel 
+        ]]>
+       </view>
+       
+    <query id="MissingSLAQuery"><![CDATA[ 
+      SELECT T.*
+        FROM InputView 
+    MATCH_RECOGNIZE (
+      PARTITION BY dispatchId
+      MEASURES
+        A.dispatchId as dispatchId,
+        A.serviceHours as serviceHours,
+        A.statusCode as statusCode,
+        A.serviceLevel as serviceLevel,
+        A.serviceTag as serviceTag,
+        A.slaEnd as slaEnd
+      INCLUDE TIMER EVENTS
+      PATTERN (A B*)
+      DURATION slaEnd SECONDS
+      DEFINE
+        A as statusCode = 'QUE',
+        B as statusCode = 'QUE'
+    ) AS T]]>
+    </query>
+    
+        
+    </rules>
+  </processor>
+</wlevs:config>

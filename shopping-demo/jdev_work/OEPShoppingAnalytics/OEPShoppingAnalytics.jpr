@@ -195,6 +195,27 @@
       <value n="j2eeWebAppName" v="ShoppingOEPApplication-OEPShoppingAnalytics-webapp"/>
       <value n="j2eeWebContextRoot" v="ShoppingOEPApplication-OEPShoppingAnalytics-context-root"/>
    </hash>
+   <hash n="oracle.jdeveloper.model.PathsConfiguration">
+      <hash n="javaContentSet">
+         <list n="constituent-sets">
+            <hash>
+               <url n="content-folder-url" path="../../../dell-demo/DellPoC/DispatchEventsProject/src/com/oracle/oep/listener/"/>
+               <list n="pattern-filters">
+                  <string v="+**"/>
+               </list>
+               <list n="url-path">
+                  <url path="../../../dell-demo/DellPoC/DispatchEventsProject/src/com/oracle/oep/listener/"/>
+               </list>
+            </hash>
+         </list>
+         <list n="pattern-filters">
+            <string v="+**"/>
+         </list>
+         <list n="url-path">
+            <url path="src/"/>
+         </list>
+      </hash>
+   </hash>
    <hash n="oracle.jdeveloper.runner.RunConfigurations">
       <hash n="runConfigurationDefinitions">
          <hash n="Default">

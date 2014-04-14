@@ -3,14 +3,14 @@
 
   	<http-pub-sub-adapter>
 		<name>DeviceLocationPubAdapter</name>
-		<server-url>http://localhost:7001/MarketingWeb/cometd</server-url>	
+		<server-url>http://localhost:7501/MarketingWeb/cometd</server-url>	
 		<channel>/marketing/devicepos</channel>
 		<event-type>DeviceEvent</event-type>
 	</http-pub-sub-adapter>
 
   	<http-pub-sub-adapter>
 		<name>PromotionPubAdapter</name>
-		<server-url>http://localhost:7001/MarketingWeb/cometd</server-url>	
+		<server-url>http://localhost:7501/MarketingWeb/cometd</server-url>	
 		<channel>/marketing/promotion</channel>
 		<event-type>PromotionEvent</event-type>
 	</http-pub-sub-adapter>
@@ -18,7 +18,7 @@
 
 	<http-pub-sub-adapter>
 		<name>ThanksPubAdapter</name>
-		<server-url>http://localhost:7001/MarketingWeb/cometd</server-url>
+		<server-url>http://localhost:7501/MarketingWeb/cometd</server-url>
 		<channel>/marketing/thanks</channel>
 		<event-type>ThanksEvent</event-type>
 	</http-pub-sub-adapter>

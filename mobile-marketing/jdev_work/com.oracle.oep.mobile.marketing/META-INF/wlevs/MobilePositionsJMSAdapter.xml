@@ -2,7 +2,7 @@
 <wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application">
     <jms-adapter>
         <name>MobilePositionsJMSAdapter</name>
-        <jndi-provider-url>t3://localhost:7001</jndi-provider-url>
+        <jndi-provider-url>t3://localhost:7501</jndi-provider-url>
         <connection-jndi-name>jms/MobileMarketingConnectionFactory</connection-jndi-name>
         <destination-jndi-name>jms/MobileDevicePositions</destination-jndi-name>
     </jms-adapter>

@@ -12,13 +12,17 @@
         <channel>/shopping/login</channel>
         <event-type>LoginEvent</event-type>
     </http-pub-sub-adapter>
-
+    <http-pub-sub-adapter>
+        <name>LoginPubAdapter</name>
+        <server-url>http://localhost:7001/ShoppingWeb/cometd</server-url>
+        <channel>/shopping/customer</channel>
+        <event-type>CustomerData</event-type>
+    </http-pub-sub-adapter>
 	<http-pub-sub-adapter>
 		<name>OfferAdapter</name>
 		<server-url>http://localhost:7001/ShoppingWeb/cometd</server-url>
         <channel>/shopping/offer</channel>
         <event-type>OfferEvent</event-type>
 	</http-pub-sub-adapter>
-    
 </wlevs:config>
 

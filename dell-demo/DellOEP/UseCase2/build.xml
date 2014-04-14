@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="DellOEP" default="build_prj" basedir=".">
+  <property file="build.properties"/>
+  <property name="deployment_jar" 
+            value="${jar_output.dir}/${ant.project.name}.jar"/>
+  <property name="url_wlevsdeployer_login"
+    value="-url http://${host}:${port}/wlevsdeployer -user ${user} -password ${password}"/>
+  <property name="deployment_utility_path"
+            location="${cep_server_dir}/bin"/>
+  <property name="deployment_utility_jar" value="wlevsdeploy.jar"/>
+  <path id="library.Com.bea.wlevs.ede.api_11.1.1._.jar">
+    <pathelement location="${cep_server_dir}/modules/com.bea.wlevs.ede.api_11.1.1.6_0.jar"/>
+  </path>
+  <path id="library.Xjcgenerated.jar">
+    <pathelement location="${basedir}/lib/xjcgenerated.jar"/>
+  </path>
+  <path id="classpath">
+    <path refid="library.Com.bea.wlevs.ede.api_11.1.1._.jar"/>
+    <path refid="library.Xjcgenerated.jar"/>
+  </path>
+  <target name="init">
+    <tstamp/>
+    <!--mkdir dir="${output.dir}"/-->
+    <mkdir dir="${jar_output.dir}"/>
+  </target>
+  <target name="rebuild_prj" description="ReBuild the project" depends="clean, build_prj"/>
+  <target name="build_prj" description="Build the project" depends="make_jar"/>
+  <!--target name="build_prj" description="Build the project" depends="make_jar,copy"/-->
+  <target name="clean" description="Clean the project">
+    <delete includeemptydirs="true" quiet="true">
+      <fileset dir="${output.dir}" includes="**/*"/>
+      <fileset dir="${jar_output.dir}" includes="**/*"/>
+    </delete>
+  </target>
+  <target name="compile" description="Compile Java source files" depends="init">
+    <javac destdir="${output.dir}" classpathref="classpath"
+           debug="${javac.debug}" nowarn="${javac.nowarn}"
+           deprecation="${javac.deprecation}" encoding="UTF8" source="1.6"
+           target="1.6">
+      <src path="src"/>
+    </javac>
+  </target>
+  <target name="make_jar" description="Make Deployment JAR" depends="compile">
+    <jar destfile="${deployment_jar}"
+         manifest="${basedir}/META-INF/MANIFEST.MF">
+      <fileset dir="${output.dir}" includes="**/*"/>
+      <fileset dir="${basedir}" includes="META-INF/**/*"/>
+      <fileset dir="${basedir}" includes="lib/**/*"/>
+    </jar>
+  </target>
+  <target name="copy" description="Copy files to output directory"
+          depends="init">
+    <patternset id="copy.patterns">
+      <include name="**/*.gif"/>
+      <include name="**/*.GIF"/>
+      <include name="**/*.jpg"/>
+      <include name="**/*.JPG"/>
+      <include name="**/*.jpeg"/>
+      <include name="**/*.JPEG"/>
+      <include name="**/*.png"/>
+      <include name="**/*.PNG"/>
+      <include name="**/*.properties"/>
+      <include name="**/*.xml"/>
+      <include name="**/*.ejx"/>
+      <include name="**/*.xcfg"/>
+      <include name="**/*.cpx"/>
+      <include name="**/*.dcx"/>
+      <include name="**/*.sva"/>
+      <include name="**/*.wsdl"/>
+      <include name="**/*.ini"/>
+      <include name="**/*.tld"/>
+      <include name="**/*.tag"/>
+      <include name="**/*.xlf"/>
+      <include name="**/*.xsl"/>
+      <include name="**/*.xsd"/>
+      <include name="**/*.jar"/>
+    </patternset>
+    <copy todir="${output.dir}">
+      <fileset dir="src">
+        <patternset refid="copy.patterns"/>
+      </fileset>
+    </copy>
+  </target>
+  <target name="deploy_cep_app" description="Deploy OEP Application">
+    <java
+      jar="${deployment_utility_path}/${deployment_utility_jar}" fork="true">
+       <arg line="${url_wlevsdeployer_login} -install ${deployment_jar}"/>
+    </java>
+  </target>
+  <target name="undeploy_cep_app" description="Undeploy OEP Application">
+    <java
+      jar="${deployment_utility_path}/${deployment_utility_jar}" fork="true">
+      <arg line="${url_wlevsdeployer_login} -uninstall ${cep_app_name}"/>
+    </java>
+  </target>
+    <target name="suspend_cep_app" description="Suspend OEP Application">
+    <java
+      jar="${deployment_utility_path}/${deployment_utility_jar}" fork="true">
+      <arg line="${url_wlevsdeployer_login} -suspend ${cep_app_name}"/>
+    </java>
+  </target>
+    <target name="resume_cep_app" description="Resume OEP Application">
+    <java
+      jar="${deployment_utility_path}/${deployment_utility_jar}" fork="true">
+      <arg line="${url_wlevsdeployer_login} -resume ${cep_app_name}"/>
+    </java>
+  </target>
+    <target name="status_cep_app" description="Check Status of OEP Application">
+    <java
+      jar="${deployment_utility_path}/${deployment_utility_jar}" fork="true">
+      <arg line="${url_wlevsdeployer_login} -status ${cep_app_name}"/>
+    </java>
+  </target>
+</project>

@@ -33,14 +33,18 @@
 		<wlevs:event-type type-name="BusinessData">
 			<wlevs:class>com.oracle.cache.demo.BusinessData</wlevs:class>
 		</wlevs:event-type>
-	   
-		<wlevs:event-type type-name="Customer">
+	   		<wlevs:event-type type-name="CustomerData">
+			<wlevs:class>com.oracle.mobile.marketing.data.CustomerData</wlevs:class>
+		</wlevs:event-type>
+		<!-- Event Type to use when implementing with Hadoop               
+                <wlevs:event-type type-name="Customer">
 			<wlevs:properties>
 				<wlevs:property name="deviceID" type="char"/>
 				<wlevs:property name="customerName" type="char"/>
 				<wlevs:property name="customerEmail" type="char"/>
 			</wlevs:properties>
 		</wlevs:event-type>
+                -->
 				
 		<wlevs:event-type type-name="BusinessLocation">
 			<wlevs:class>com.oracle.oep.event.BusinessLocation</wlevs:class>
@@ -52,8 +56,8 @@
 	<!-- Caching Configuration -->
 	<wlevs:caching-system id="CoherenceCachingSystem" provider="coherence" />   
 
- 	<wlevs:cache id="BusinessCache" caching-system="CoherenceCachingSystem" 
-		value-type="BusinessData" key-properties="businessID">
+ 	<wlevs:cache id="BusinessCache" value-type="BusinessData" key-properties="businessID">
+                <wlevs:caching-system ref="CoherenceCachingSystem"/>
 		<wlevs:cache-loader ref="BusinessDataCacheLoader"/>
 		<wlevs:cache-listener ref="BusinessCacheListener"/>			  
 	</wlevs:cache>
@@ -63,7 +67,7 @@
 		class="com.oracle.oep.adapter.BusinessCacheLoadAdapter">	
 		<wlevs:instance-property name="businessCache" ref="BusinessCache"/>  
 		<wlevs:instance-property name="loader" ref="BusinessDataCacheLoader"/>
-		<wlevs:instance-property name="url"		 value="jdbc:oracle:thin:@localhost:1521:ORCL" />
+		<wlevs:instance-property name="url" value="﻿jdbc:oracle:thin:@localhost:1521:demo" />
 		<wlevs:instance-property name="username" value="hol" />
 		<wlevs:instance-property name="password" value="hol" />			
 	</wlevs:event-bean>
@@ -122,14 +126,16 @@
 	
 	
 	<!-- The file element to integrate Customer.txt file from the Hadoop system into the EPN. -->
-
-    <hadoop:file id="CustomerInfo" event-type="Customer" path="/oracle/demos/marketing/Customer.txt" />
-    
+        <!--
+        <hadoop:file id="CustomerInfo" event-type="Customer" path="/oracle/demos/marketing/Customer.txt" />
+        -->
+        <nosqldb:store id="CustomerInfo" store-name="kvstore" event-type="CustomerData" store-locations="localhost:5000" />
+        
+        
+        
 	<wlevs:processor id="CustomerProcessor">
-		<wlevs:listener ref="CustomerPromotionChannel" />
-		 
+		<wlevs:listener ref="CustomerPromotionChannel" />		 
 		<wlevs:table-source ref="CustomerInfo"/>
-			 
 	</wlevs:processor>
 	
 	

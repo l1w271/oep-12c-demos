@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application">
+
+  <processor>
+    <name>SalesProcessor</name>
+    <rules>
+
+<!-- change to join to cache like the performance sample -->
+     <view id="SalesFilter" ordering-constraint="PARTITION_ORDERED" partition-expression="storeID"><![CDATA[
+      SELECT * 
+      FROM InputChannel
+      WHERE productID = 'p10001'
+   ]]></view>
+
+     <view id="SalesTotal" ordering-constraint="PARTITION_ORDERED" partition-expression="storeID">
+     <![CDATA[ 
+      SELECT SUM(numUnitsSold) as numUnitsSold, retailerID, storeID, productID 
+      FROM SalesFilter [range 1 day slide 2 seconds]
+      GROUP BY retailerID, storeID, productID
+   ]]></view>
+
+     <query id="SalesTotalQuery" ordering-constraint="PARTITION_ORDERED" partition-expression="storeID">
+     <![CDATA[ 
+      SELECT * 
+      FROM SalesTotal
+      ]]></query>
+
+     <query id="SalesThresholdQuery" ordering-constraint="PARTITION_ORDERED" partition-expression="storeID">
+     <![CDATA[ 
+      SELECT * 
+      FROM SalesTotal
+      WHERE numUnitsSold > 5000 
+      ]]></query>
+
+    </rules>
+  </processor>
+  
+  <channel>
+    <name>OutputChannel</name>
+    <selector>SalesTotalQuery</selector>
+  </channel>
+  
+   <channel>
+    <name>AlertChannel</name>
+    <selector>SalesThresholdQuery</selector>
+  </channel>
+  
+</wlevs:config>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
+       xmlns:jdbc="http://www.oracle.com/ns/ocep/jdbc"
+       xmlns:hadoop="http://www.oracle.com/ns/oep/hadoop"
+       xmlns:nosqldb="http://www.oracle.com/ns/oep/nosqldb"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/osgi
+  http://www.springframework.org/schema/osgi/spring-osgi.xsd
+  http://www.bea.com/ns/wlevs/spring
+  http://www.bea.com/ns/wlevs/spring/ocep-epn.xsd
+  http://www.oracle.com/ns/ocep/jdbc
+  http://www.oracle.com/ns/ocep/jdbc/ocep-jdbc.xsd
+  http://www.oracle.com/ns/oep/hadoop
+  http://www.oracle.com/ns/oep/hadoop/oep-hadoop.xsd
+  http://www.oracle.com/ns/oep/nosqldb
+  http://www.oracle.com/ns/oep/nosqldb/oep-nosqldb.xsd">
+  
+  <wlevs:event-type-repository>
+    <wlevs:event-type type-name="DispatchEvent">
+      <wlevs:class>com.oracle.oep.event.DispatchEvent</wlevs:class>
+    </wlevs:event-type>
+    <wlevs:event-type type-name="SLADispatchEvent">
+      <wlevs:class>com.oracle.oep.event.SLADispatchEvent</wlevs:class>
+    </wlevs:event-type>
+  </wlevs:event-type-repository>
+  
+  <wlevs:adapter id="DispatchAdapter" provider="csv-inbound">
+    <wlevs:listener ref="InputChannel"/>
+    <wlevs:instance-property name="eventType" value="DispatchEvent"/>
+    <wlevs:instance-property name="sourceUrl" value="file:////Users/Lloyd/Work/Customers/Dell/dispatch.csv"/>
+  </wlevs:adapter>
+  
+  <wlevs:channel id="InputChannel" event-type="DispatchEvent">
+    <wlevs:listener ref="InputBean"/>
+    <wlevs:listener ref="DispatchEventProcessor"/>
+  </wlevs:channel>
+ <bean id="InputBean" class="com.oracle.oep.listener.OutputBean"/>
+ <bean id="SimpleCalendarBean" name="SimpleCalendar" class="com.oracle.oep.util.SimpleCalendar"/>
+  
+  <wlevs:processor id="DispatchEventProcessor">
+      <wlevs:function function-name="RandomLowInterval" exec-method="getRandomLowInterval" ref="SimpleCalendarBean"/>
+  </wlevs:processor>
+  
+  <wlevs:channel id="OutputChannel" event-type="SLADispatchEvent">
+    <wlevs:listener ref="OutputBean"/>
+    <wlevs:source ref="DispatchEventProcessor"/>
+  </wlevs:channel>
+  <bean id="OutputBean" class="com.oracle.oep.listener.OutputBean"/>
+  
+  <!--
+  <wlevs:event-bean id="DurationCalcEventBean" class="com.oracle.oep.eventbean.DurationCalcEventBean">
+    <wlevs:listener ref="DurationChannel"/>
+  </wlevs:event-bean>
+  <wlevs:channel id="DurationChannel" event-type="DispatchEvent">
+    <wlevs:listener ref="DispatchEventProcessor"/>
+  </wlevs:channel>
+  -->
+</beans>

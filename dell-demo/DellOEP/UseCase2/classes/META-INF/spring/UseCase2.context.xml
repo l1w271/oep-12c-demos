@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi" xmlns:wlevs="http://www.bea.com/ns/wlevs/spring"
+       xmlns:hadoop="http://www.oracle.com/ns/oep/hadoop" xmlns:nosqldb="http://www.oracle.com/ns/oep/nosqldb" xsi:schemaLocation="
+  http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/osgi
+  http://www.springframework.org/schema/osgi/spring-osgi.xsd
+  http://www.bea.com/ns/wlevs/spring
+  http://www.bea.com/ns/wlevs/spring/ocep-epn.xsd
+  http://www.oracle.com/ns/oep/hadoop
+  http://www.oracle.com/ns/oep/hadoop/oep-hadoop.xsd">
+    <wlevs:event-type-repository>
+        <wlevs:event-type type-name="DispatchEvent">
+            <wlevs:class>poc.dell.DispatchEvent</wlevs:class>
+        </wlevs:event-type>
+        <wlevs:event-type type-name="DispatchAlert">
+            <wlevs:class>poc.dell.DispatchAlert</wlevs:class>
+        </wlevs:event-type>
+    </wlevs:event-type-repository>
+    <wlevs:adapter id="DispatchEventCSVAdapter" provider="csv-inbound">
+        <wlevs:listener ref="CleanDispatchEvents"/>
+        <wlevs:instance-property name="eventType" value="DispatchEvent"/>
+        <wlevs:instance-property name="sourceUrl"
+                                 value="file:////Users/Lloyd/Work/Customers/Dell/AntonyTestCases.csv"/>
+    </wlevs:adapter>
+    <wlevs:channel id="CleanDispatchEvents" event-type="DispatchEvent">
+        <wlevs:listener ref="MilestoneAlert2BusinessDays"/>
+        <wlevs:listener ref="MilestoneAlert24x7"/>
+    </wlevs:channel>
+    <wlevs:processor id="MilestoneAlert24x7">
+        <wlevs:listener ref="UnfilteredAlertEvents"/>
+    </wlevs:processor>
+    <wlevs:event-bean id="AlertSinkBean" class="antony.cep.beans.AlertSinkEventProcessorBean"/>
+    <wlevs:channel id="UnfilteredAlertEvents" event-type="DispatchAlert">
+        <wlevs:listener ref="AlertSinkBean"/>
+    </wlevs:channel>
+    <bean id="DispatchDataMessageHelper" name="DispatchDataMessageHelper" class="antony.cep.util.DispatchDataMessageHelper"/>
+    <wlevs:processor id="MilestoneAlert2BusinessDays">
+        <wlevs:listener ref="UnfilteredAlertEvents"/>
+        <wlevs:function function-name="ActualDays" exec-method="getActualDays" ref="DispatchDataMessageHelper"/>
+    </wlevs:processor>
+</beans>

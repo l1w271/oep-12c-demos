@@ -40,7 +40,7 @@
       <value n="oracle.jdevimpl.xml.wl.WeblogicMigratorHelper" v="11.1.1.1.0"/>
       <value n="oracle.modeler.bmmigrate.management.Migration" v="11.1.1.1.0"/>
       <value n="oracle.tip.tools.ide.fabric.addin.SCAProjectMigrator" v="11.1.1.1.0.12"/>
-      <value n="oracle.tip.tools.ide.workflow.addin.TaskFormMigratorAddin" v="11.1.1.1.0"/>
+      <value n="oracle.tip.tools.ide.workflow.addin.TaskFormMigratorAddin" v="11.1.1.1.0;12.1.3.0.0"/>
       <value n="oracle.tip.tools.ide.workflow.addin.WorkflowProjectMigrator" v="12.1.2.0.0"/>
       <value n="oracle.toplink.workbench.addin.migration.PersistenceProjectMigrator" v="11.1.1.1.0"/>
       <value n="oracle.toplink.workbench.addin.migration.TopLinkProjectMigrator" v="11.1.1.1.0"/>
@@ -86,14 +86,14 @@
    </hash>
    <hash n="oracle.jdeveloper.deploy.dt.DeploymentProfiles">
       <hash n="profileDefinitions">
-         <hash n="oep_mobile_marketing_profile">
+         <hash n="mobile-marketing-1">
             <hash n="archiveOptions">
                <list n="additionalManifests">
                   <url path="META-INF/MANIFEST.MF"/>
                </list>
                <value n="bundleName" v="com.oracle.oep.mobile.marketing"/>
                <value n="bundleSymbolicName" v="com.oracle.oep.mobile.marketing"/>
-               <value n="bundleVersion" v="1.0.1"/>
+               <value n="bundleVersion" v="1.0.3"/>
                <value n="hasManifest" v="true"/>
             </hash>
             <hash n="deployment-platform">
@@ -183,16 +183,17 @@
                </list>
                <hash n="rules"/>
             </hash>
-            <url n="jarURL" path="deploy/oep_mobile_marketing_profile.jar"/>
-            <value n="profileClass" v="oracle.tip.tools.ide.cep.core.cepserver.deploy.CEPProjectDeploymentProfile"/>
-            <value n="profileName" v="oep_mobile_marketing_profile"/>
+            <url n="jarURL" path="deploy/mobile-marketing-1.jar"/>
+            <hash n="library_properties"/>
+            <value n="profileClass" v="oracle.tip.tools.ide.cep.core.cepserver.deploy.OEPAppLibraryDeploymentProfile"/>
+            <value n="profileName" v="mobile-marketing-1"/>
             <hash n="requireBundles">
                <hash n="rules"/>
             </hash>
          </hash>
       </hash>
       <list n="profileList">
-         <string v="oep_mobile_marketing_profile"/>
+         <string v="mobile-marketing-1"/>
       </list>
    </hash>
    <hash n="oracle.jdeveloper.model.J2eeSettings">
@@ -234,6 +235,10 @@
             <value n="id" v="Com.bea.wlevs.adapters.jms_12.1.2.0_0.jar"/>
             <value n="isJDK" v="false"/>
          </hash>
+         <hash>
+            <value n="id" v="Marketing-data.jar"/>
+            <value n="isJDK" v="false"/>
+         </hash>
       </list>
       <hash n="internalDefinitions">
          <list n="libraryDefinitions">
@@ -264,6 +269,15 @@
                <value n="id" v="Com.bea.wlevs.adapters.jms_12.1.2.0_0.jar"/>
                <value n="locked" v="true"/>
             </hash>
+            <hash>
+               <list n="classPath">
+                  <url path="lib/marketing-data.jar" jar-entry=""/>
+               </list>
+               <value n="deployedByDefault" v="true"/>
+               <value n="description" v="Marketing-data.jar"/>
+               <value n="id" v="Marketing-data.jar"/>
+               <value n="locked" v="true"/>
+            </hash>
          </list>
       </hash>
       <list n="libraryReferences">
@@ -289,6 +303,10 @@
          </hash>
          <hash>
             <value n="id" v="Com.bea.wlevs.adapters.jms_12.1.2.0_0.jar"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="Marketing-data.jar"/>
             <value n="isJDK" v="false"/>
          </hash>
       </list>

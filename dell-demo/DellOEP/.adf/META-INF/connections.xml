@@ -1,0 +1,44 @@
+<References xmlns="http://xmlns.oracle.com/adf/jndi">
+  <Reference name="OEPTestConnection"
+             className="oracle.tip.tools.ide.cep.core.cepserver.connection.CEPServerConnectionDescriptor"
+             credentialStoreKey="OEPTestConnection" xmlns="">
+    <Factory className="oracle.tip.tools.ide.cep.core.cepserver.connection.CEPServerConnectionFactory"/>
+    <RefAddresses>
+      <StringRefAddr addrType="CONTEXT_ATTR_ID_PORT">
+        <Contents>9002</Contents>
+      </StringRefAddr>
+      <StringRefAddr addrType="CONTEXT_ATTR_ID_USER_NAME">
+        <Contents>wlevs</Contents>
+      </StringRefAddr>
+      <StringRefAddr addrType="CONTEXT_ATTR_ID_HOST">
+        <Contents>127.0.0.1</Contents>
+      </StringRefAddr>
+      <StringRefAddr addrType="CONTEXT_ATTR_ID_PROJECT_DIR">
+        <Contents>user_projects\domains\test_domain\defaultserver</Contents>
+      </StringRefAddr>
+      <StringRefAddr addrType="CONTEXT_ATTR_ID_OEP_CONFIG_SERVER_NAME">
+        <Contents>defaultserver</Contents>
+      </StringRefAddr>
+      <StringRefAddr addrType="CONTEXT_ATTR_ID_HOME_PATH">
+        <Contents>C:\Oracle\OEP12cBeta</Contents>
+      </StringRefAddr>
+      <StringRefAddr addrType="CONTEXT_ATTR_ID_INSTALL_DIR">
+        <Contents>oep</Contents>
+      </StringRefAddr>
+      <StringRefAddr addrType="CONTEXT_ATTR_ID_OEP_CONFIG_DOMAIN_NAME">
+        <Contents>test_domain</Contents>
+      </StringRefAddr>
+      <StringRefAddr addrType="CONTEXT_ATTR_ID_IS_REMOTE_STATUS">
+        <Contents>false</Contents>
+      </StringRefAddr>
+      <StringRefAddr addrType="Title">
+        <Contents>OEPTestConnection</Contents>
+      </StringRefAddr>
+      <StringRefAddr addrType="CONTEXT_ATTR_ID_OEP_SERVER_PARAMS">
+        <Contents>[property_value_undefined]</Contents>
+      </StringRefAddr>
+      <SecureRefAddr addrType="CONTEXT_ATTR_ID_USER_PASSWORD"/>
+    </RefAddresses>
+  </Reference>
+</References>
+

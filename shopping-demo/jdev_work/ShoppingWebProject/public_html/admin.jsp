@@ -32,7 +32,7 @@
 <table cellspacing="2" cellpadding="3" border="0" width="60%">
 
 <tr>
-<td>Query ID:</td><td><input name="queryId" size="25" type="text" value="Q203" /></td>
+<td>Offer ID:</td><td><input name="queryId" size="25" type="text" value="Gold Customer Promotion" /></td>
 </tr>
 <tr>
 <td>Product ID:</td><td><input name="productID" size="25" type="text" value="p203"/></td>
@@ -41,7 +41,7 @@
 <td>Product Name:</td><td><input name="productName" size="45" type="text" value="Think Thin Brownie Crunch" /></td>
 </tr>
 <tr>
-<td>Price:</td><td><input name="price" size="25" type="text" value="4.39" /></td>
+<td>Price:</td><td><input name="price" size="25" type="text" value="3.79" /></td>
 </tr>
 <tr>
 <td>Image Source:</td><td><input name="imgSource" size="25" type="text" value="203.jpg"/></td>
@@ -58,10 +58,10 @@ Comparison:
 
 <tr><td>
 Loyalty Status: </td><td> 
-<select name="loyaltyStatus" width="120" size="1">
+<select name="loyaltyStatus" width="120" size="4">
 <option value="0">Green</option>
 <option value="1">Silver</option>
-<option value="2">Gold</option>
+<option selected value="2">Gold</option>
 <option value="3">Platinum</option>
 </select>
 </td></tr>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application">
+  <channel>
+    <name>InputChannel</name>
+    <max-size>0</max-size>
+    <max-threads>0</max-threads>
+    <partition-order-capacity>64</partition-order-capacity>
+ </channel>
+  <csv-adapter>
+    <name>SalesAdapter</name>
+    <event-interval units="seconds">1</event-interval>
+    <initial-delay units="seconds">5</initial-delay>
+  </csv-adapter>
+
+</wlevs:config>

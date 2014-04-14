@@ -133,8 +133,9 @@ public class QueryAdminHTTPService extends HttpServlet implements Adapter, Initi
 		
 			try {
 				queryID = request.getParameter("queryId");
-				String offerID = request.getParameter("offerID");
-				String imgSource  = request.getParameter("imgSource");
+				//String offerID = request.getParameter("offerID");
+				String offerID = queryID ;
+                                String imgSource  = request.getParameter("imgSource");
 				String productID = request.getParameter("productID");
 				String productName = request.getParameter("productName");
 				String compare = request.getParameter("compare");

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wlevs:config xmlns:wlevs="http://www.bea.com/ns/wlevs/config/application"
+              xmlns:jdbc="http://www.oracle.com/ns/ocep/config/jdbc">
+    <processor>
+        <name>AmountProcessor</name>
+        <rules>
+         <view id="TotalAmountView"> 
+            <![CDATA[
+            ISTREAM(
+            SELECT customerID, sessionID, SUM(price) as totalCart
+            FROM InputChannel [PARTITION BY customerID ROWS 1000 RANGE 60 MINUTES]
+            GROUP BY customerID, sessionID
+            )             
+            ]]> 
+         </view>
+         
+         <!-- Gets amounts greater than 50.00 -->
+         <query id="TotalAmountQuery"> 
+            <![CDATA[     
+            SELECT customerID, sessionID, totalCart
+            FROM TotalAmountView 
+            WHERE totalCart > 50.00            
+            ]]> 
+         </query>
+         
+        
+         
+        </rules>
+    </processor>
+</wlevs:config>
+

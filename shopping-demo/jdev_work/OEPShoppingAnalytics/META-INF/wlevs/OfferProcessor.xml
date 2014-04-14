@@ -5,34 +5,34 @@
         <name>OfferProcessor</name>
         <rules>
            
-    		<query id="Offer200Query">
+    		<query id="LoyalCustomerOffer">
     		 <![CDATA[
         	ISTREAM(
             	SELECT customerID,
             	       sessionID,
-            	       'Offer200' as offerID,
+            	       'Loyal Customer Offer' as offerID,
             	       '200.jpg' as imgSource,
             	       'p200' as productID,
             	       'Skinny Cow Dreamy Clusters' as productName,
             	       3.29 as price
             	FROM CustomerChannel
-            	WHERE loyaltyStatus > 1
+            	WHERE loyaltyStatus > 0
         	)
         	 ]]> 
     		</query>
     		
-    		<query id="Offer201Query">
+    		<query id="GreenCustomerOffer">
     		 <![CDATA[
         	ISTREAM(
             	SELECT customerID,
             	       sessionID,
-            	       'Offer201' as offerID,
+            	       'Green Customer Offer' as offerID,
             	       '201.jpg' as imgSource,
             	       'p201' as productID,
             	       'Life Savers Hard Candy' as productName,
             	       1.99 as price
             	FROM CustomerChannel as c
-            	WHERE loyaltyStatus < 2	 
+            	WHERE loyaltyStatus = 0	 
         	)
         	 ]]>
     		</query>

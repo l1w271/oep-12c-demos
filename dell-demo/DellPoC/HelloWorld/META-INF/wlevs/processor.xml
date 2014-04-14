@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<n1:config xmlns:n1="http://www.bea.com/ns/wlevs/config/application">
+  <processor>
+    <name>helloworldProcessor</name>
+    <rules>
+      <query id="helloworldRule">
+        <![CDATA[ select * from helloworldInputChannel ]]>
+      </query>
+    </rules>
+  </processor>
+</n1:config>
